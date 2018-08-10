@@ -498,7 +498,8 @@
 
         dots.selectAll(".boundingCircle")
             .filter(function(d) { return (d.frame != +slider.value); })
-            .style("fill", function(d) { return 'none'; });
+            //.style("fill", function(d) { return 'none'; });
+            .style("stroke-dasharray", '5 3');
 
         var active = dots.selectAll(".boundingCircle")
             .filter(function(d) { return (d.frame == +slider.value); });
@@ -514,11 +515,13 @@
                     //console.log(dist + ">" + humanRadius);
                     if (dist<humanRadius*2) {
                         d3.select(objD)
-                            .style("fill", '#ff0000')
-                            .style("opacity", 0.3);
+                            .style("stroke-dasharray", '0 0')
+                            //.style("fill", '#ff0000')
+                            //.style("opacity", 0.3);
                         d3.select(this)
-                            .style("fill", '#ff0000')
-                            .style("opacity", 0.3);
+                            .style("stroke-dasharray", '0 0')
+                            //.style("fill", '#ff0000')
+                            //.style("opacity", 0.3);
                         //console.log(d.frame+": "+d.id + "-" + e.id +" : " + dist + ">" + humanRadius*2);
 
                         var sss = speedDistanceGraph.svg.selectAll(".sline")
