@@ -154,6 +154,8 @@
         this.yAxis = d3.svg.axis()
             .scale(this.y)
             .orient("left");
+
+
     }
 
     SmallGraph.prototype.drawAxes = function(xDomain, yDomain, xLabel, yLabel) {
@@ -194,8 +196,8 @@
     }
 
     SmallGraph.prototype.drawLineGraph = function(gdata) {
-        //console.log(gdata);
-
+        console.log(gdata);
+        this.svg.selectAll(".sline").remove();
         this.svg.append("g")
             .attr("clip-path", "url(#innerGraph)")
             .selectAll(".sline")
@@ -316,7 +318,7 @@
                 d.cy = (d.ry + d.ly) * 0.5;
                 d.time = d.frame / 5.0;
             });
-            console.log(data);
+            //console.log(data);
 
             var maxFrame = d3.max(data, function (d) {
                 return d.frame;
@@ -389,6 +391,7 @@
                 .attr("cy", function (d) {
                     return y(d.ry);
                 })
+                //.on("mouseenter", function(d) {console.log(d.id);})
                 .style("fill", function (d) {
                     return color[d.id];
                 })
@@ -404,12 +407,14 @@
                 .attr("cy", function (d) {
                     return y(d.ly);
                 })
+                //.on("mouseenter", function(d) {console.log(d.id);})
                 .style("fill", function (d) {
                     return color[d.id];
                 })
                 .style("opacity", function (d) {
                     return circleOpacityLookup(d.frame);
                 });
+                //.on("mouseout", handleMouseOut);
             g.append("circle")
                 .attr("class", "boundingCircle")
                 //.attr("r", function(d) {return Math.sqrt(Math.pow((x(d.rx)-x(d.lx)),2)+Math.pow((y(d.ry)-y(d.ly)),2))*0.5 + 3.5 })
@@ -469,6 +474,25 @@
         loadData("data/"+dropdown.options[dropdown.selectedIndex].value+".txt");
     }
 
+    function handleMouseOver(d) {  // Add interactivity
+        console.log("d.id");
+        // Specify where to put label of text
+        svg.append("text").attr({
+            id: "t" + d.id,  // Create an id for text so we can select it later for removing on mouseout
+            x: function() { return x(d.cx) - 30; },
+            y: function() { return y(d.cy) - 15; }
+        })
+            .text(function() {
+                return [d.id];  // Value of the text
+            });
+    }
+
+    function handleMouseOut(d, i) {
+        // Select text by id and then remove
+        d3.select("#t" + d.id).remove();  // Remove text location
+    }
+
+
 
     var update = function() {
 
@@ -502,7 +526,10 @@
             .style("stroke-dasharray", '5 3');
 
         var active = dots.selectAll(".boundingCircle")
-            .filter(function(d) { return (d.frame == +slider.value); });
+            .filter(function(d) {
+                if((d.frame == +slider.value))
+                    console.log("time:" + d.time + "["+d.frame+"]: " + d.id);
+                return (d.frame == +slider.value); });
             //.style("fill", function(d) { return '#ff0000'; });
 
         //console.log(active);
@@ -527,8 +554,8 @@
                         var sss = speedDistanceGraph.svg.selectAll(".sline")
                             .filter(function(z) {
                                 //console.log(z);
-//                                if((d.id == +z.key )||(e.id == +z.key))
-//                                    console.log(d.frame+': '+z);
+                                //  if((d.id == +z.key )||(e.id == +z.key))
+                                //      console.log(d.frame+': '+z);
                                 return ((d.id == +z.key )||(e.id == +z.key)); })
                             .style("stroke-width", 10);
                     }
