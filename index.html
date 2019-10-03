@@ -4,9 +4,77 @@
 <head>
     <meta charset="utf-8">
     <title>GaitVis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 
+
+<body>
+<div id="heading">
+    <h1>GaitVis</h1>
+    <h6>A Gait Visualization Dashboard</h6>
+</div>
+<div class="block">
+    <div class="container container-fluid">
+        <div class="row flex-grow-1">
+            <div class="col-md-6 d-xl-flex justify-content-xl-center align-items-xl-center colcell">
+                <div class="footstepchart"></div>
+            </div>
+            <div class="col colcell">
+                <div class="row">
+                    <div class="col">
+                        <div class="speedchart"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col text-center">
+                        <video class="videocontainer">
+                            <source id="mp4source" src="" type="video/mp4">
+                        </video>
+                        <div class="d-xl-flex justify-content-xl-center">
+                            <div class="inputdiv">
+                                <input type="range" min="1" max="100" value="0" class="custom-range" id="myRange">
+                                <div class="form-check custom-control custom-checkbox ">
+                                    <input class="form-check-input custom-control-input" type="checkbox" id="heatmapCheckbox">
+                                    <label class="form-check-label custom-control-label mylabel" for="heatmapCheckbox">heatmap</label>
+                                </div>
+<!--                                <div class="custom-control custom-checkbox">-->
+<!--                                    <input type="checkbox" class="custom-control-input" id="heatmapCheckbox">-->
+<!--                                    <label class="custom-control-label" for="heatmapCheckbox">heatmap</label>-->
+<!--                                </div>-->
+<!--                                <input type="range" class="custom-range">-->
+<!--                                <div class="form-check custom-control custom-checkbox"><input class="form-check-input custom-control-input" type="checkbox" id="formCheck-1"><label class="form-check-label custom-control-label" for="formCheck-1">heatmap</label></div>-->
+                            </div>
+                            <div class="inputdiv">
+                                <select id="dropdown" class="custom-select custom-select-sm"></select>
+<!--                                <div class="dropdown"><button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Dropdown </button>-->
+<!--                                    <div class="dropdown-menu" role="menu"><a class="dropdown-item" role="presentation" href="#">First Item</a><a class="dropdown-item" role="presentation" href="#">Second Item</a><a class="dropdown-item" role="presentation" href="#">Third Item</a></div>-->
+<!--                                </div>-->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div id="slideContainer">-->
+<!--    <input type="range" min="1" max="100" value="0" class="custom-range" id="myRange">-->
+<!--    <div class="custom-control custom-checkbox">-->
+<!--        <input type="checkbox" class="custom-control-input" id="heatmapCheckbox">-->
+<!--        <label class="custom-control-label" for="heatmapCheckbox">heatmap</label>-->
+<!--    </div>-->
+<!--    &lt;!&ndash;<input type="checkbox" id="heatmapCheckbox">heatmap&ndash;&gt;-->
+<!--&lt;!&ndash;    <select id="dropdown" class="custom-select custom-select-sm"></select>&ndash;&gt;-->
+<!--</div>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+<script src="js/d3.v3.min.js"></script>
+<script src="js/heatmap.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+<!--
 <body>
     <div id="viz">
     </div>
@@ -19,5 +87,5 @@
     <script src="js/d3.v3.min.js"></script>
     <script src="js/heatmap.min.js"></script>
     <script src="js/main.js"></script>
-</body>
+</body>-->
 </html>

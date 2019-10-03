@@ -1,22 +1,23 @@
 var slider = document.getElementById("myRange");
 var heatmapCheckbox = document.getElementById("heatmapCheckbox");
-var filestems = ['YU_VC01_20180620_092549', 'YU_VC01_20180620_141810', 'YU_VC01_20180620_144815', 'YU_VC01_20180620_151819', 'YU_VC01_20180620_161827', 'YU_VC01_20180620_174838', 'YU_VC01_20180620_181841', 'YU_VC01_20180620_191850', 'YU_VC01_20180620_202358', 'YU_VC02_20180620_092549', 'YU_VC02_20180620_141810', 'YU_VC02_20180620_144815', 'YU_VC02_20180620_154822', 'YU_VC02_20180620_161827', 'YU_VC02_20180620_174838','YU_VC02_20180620_181841', 'YU_VC02_20180620_191850', 'YU_VC02_20180620_202358'],
-    dropdown = document.getElementById( 'dropdown' );
+//var filestems = ['YU_VC01_20180620_092549', 'YU_VC01_20180620_141810', 'YU_VC01_20180620_144815', 'YU_VC01_20180620_151819', 'YU_VC01_20180620_161827', 'YU_VC01_20180620_174838', 'YU_VC01_20180620_181841', 'YU_VC01_20180620_191850', 'YU_VC01_20180620_202358', 'YU_VC02_20180620_092549', 'YU_VC02_20180620_141810', 'YU_VC02_20180620_144815', 'YU_VC02_20180620_154822', 'YU_VC02_20180620_161827', 'YU_VC02_20180620_174838','YU_VC02_20180620_181841', 'YU_VC02_20180620_191850', 'YU_VC02_20180620_202358'];
+var filestems = ['YU_VC01_20180620_092549', 'YU_VC01_20180620_141810', 'YU_VC01_20180620_144815'];
+var dropdown = document.getElementById( 'dropdown' );
 for( f in filestems ) {
     dropdown.add( new Option( filestems[f] ) );
 };
 
 
 var margin = {top: 20, right: 20, bottom: 40, left: 40},
-    width = 600 - margin.left - margin.right,
-    height = 600 - margin.top - margin.bottom;
+    width = 500 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
 var humanRadius = 1.0;
 
 function SmallGraph (name) {
     this.name = name;
     this.margin = {top: 20, right: 20, bottom: 40, left: 40};
-    this.width = 600 - this.margin.left - this.margin.right;
-    this.height = 600 - this.margin.top - this.margin.bottom;
+    this.width = 500 - this.margin.left - this.margin.right;
+    this.height = 300 - this.margin.top - this.margin.bottom;
 }
 
 //console.log(chart2Dim);
@@ -49,7 +50,7 @@ var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
 
-var svg = d3.select("#viz").append("svg")
+var svg = d3.select(".footstepchart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
@@ -114,7 +115,7 @@ SmallGraph.prototype.drawAxes = function(xDomain, yDomain, xLabel, yLabel) {
 }
 
 SmallGraph.prototype.drawLineGraph = function(gdata) {
-    console.log(gdata);
+    //console.log(gdata);
     this.svg.selectAll(".sline").remove();
     this.svg.append("g")
         .attr("clip-path", "url(#innerGraph)")
@@ -178,14 +179,15 @@ var drawAxes = function() {
 
 drawAxes();
 var speedDistanceGraph = new SmallGraph("speed-distance");
-speedDistanceGraph.initGraph("#viz");
-speedDistanceGraph.xAxis.ticks(5);
+speedDistanceGraph.initGraph(".speedchart");
+speedDistanceGraph.xAxis.ticks(10);
+speedDistanceGraph.yAxis.ticks(5);
 var frame2time = 0.2;
 var frameWindowSize = 20;
 speedDistanceGraph.drawAxes([0,frameWindowSize*frame2time], [0,5], "time (s)", "speed (m/s)");
 
 var heatmapInstance = h337.create({
-    container: document.querySelector('#viz'),
+    container: document.querySelector('.footstepchart'),
     radius: humanRadius * 2
 });
 
@@ -210,13 +212,23 @@ var opacityLookupTable = [1, 0.0];
 var data;
 
 
-var loadData = function(ds) {
+function loadVideo(path) {
+    let video = document.querySelector(".videocontainer");
+    console.log(path);
+    document.getElementById("mp4source").src = path;
+    video.load();
+}
+
+var loadData = function(filename) {
+    let textPath = "data/"+filename+".txt";
+    let videoPath = "vid/"+filename+".mp4";
+
     slider.value = 0;
     frameCount = 0;
     svg.selectAll(".line").remove();
     svg.selectAll(".dot").remove();
     svg.selectAll(".boundingCircle").remove()
-    d3.text(ds, function (text) {
+    d3.text(textPath, function (text) {
         data = d3.csv.parseRows(text).map(function (row) {
             //return { frame: +row[0], id: +row[1], rx: +row[2], ry: +row[3], lx: +row[4], ly: +row[5], cx:((+row[2])+(+row[4]))*0.5, cy:((+row[3])+(+row[5]))*0.5 };
             return {
@@ -363,6 +375,7 @@ var loadData = function(ds) {
         update();
     });
 
+    loadVideo(videoPath);
 }
 var euclideanDistance = function(p0,p1) {
     return Math.sqrt(Math.pow(p1[0]-p0[0],2) + Math.pow(p1[1]-p0[1],2));
@@ -389,7 +402,8 @@ heatmapCheckbox.onclick = function () {
 }
 
 dropdown.onchange = function () {
-    loadData("data/"+dropdown.options[dropdown.selectedIndex].value+".txt");
+    //loadData("data/"+dropdown.options[dropdown.selectedIndex].value+".txt");
+    loadData(dropdown.options[dropdown.selectedIndex].value);
 }
 
 function handleMouseOver(d) {  // Add interactivity
@@ -445,8 +459,8 @@ var update = function() {
 
     var active = dots.selectAll(".boundingCircle")
         .filter(function(d) {
-            if((d.frame == +slider.value))
-                console.log("time:" + d.time + "["+d.frame+"]: " + d.id);
+            // if((d.frame == +slider.value))
+            //     console.log("time:" + d.time + "["+d.frame+"]: " + d.id);
             return (d.frame == +slider.value); });
     //.style("fill", function(d) { return '#ff0000'; });
 
@@ -484,8 +498,8 @@ var update = function() {
 
 
 
-
-
+    let video = document.querySelector(".videocontainer");
+    video.currentTime = (+slider.value)*frame2time;
 }
 
 document.addEventListener("keydown", keyDownTextField, false);
@@ -503,4 +517,8 @@ function keyDownTextField(e) {
     }
 }
 
-loadData("data/"+dropdown.options[dropdown.selectedIndex].value+".txt");
+
+window.onload = (event) => {
+    //loadData("data/"+dropdown.options[dropdown.selectedIndex].value+".txt");
+    loadData(dropdown.options[dropdown.selectedIndex].value);
+}

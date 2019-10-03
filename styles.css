@@ -62,3 +62,41 @@ path {
     margin-left: 40px;
     margin-top: 20px;
 }
+
+
+#heading {
+    padding: 20px;
+    background-color: rgb(220,220,220);
+}
+
+.block {
+    height: 100%;
+    padding: 10px;
+}
+
+.footstepchart {
+    height: 500px;
+    width: 500px;
+}
+
+.speedchart {
+    width: 500px;
+    height: 300px;
+}
+
+.colcell {
+    padding: 20px;
+}
+
+.videocontainer {
+    height: 200px;
+}
+
+.inputdiv{
+    width: 150px;
+    margin: 0 5px;
+}
+
+.mylabel {
+    line-height: 25px;
+}
