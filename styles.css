@@ -1,0 +1,64 @@
+body {
+    font: 10px sans-serif;
+}
+path {
+    stroke: gray;
+    stroke-width: 0.5;
+    stroke-opacity: 0.3;
+    fill: none;
+    shape-rendering: crispEdges;
+}
+
+.sline {
+    stroke: black;
+    stroke-width: 3;
+    stroke-opacity: 0.6;
+    fill: none;
+    shape-rendering: crispEdges;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.dot {
+    stroke: #000;
+}
+
+.boundingCircle {
+    stroke: black;
+    stroke-width: 0.5;
+    stroke-opacity: 1.0;
+    stroke-dasharray: 5 3;
+    fill: none;
+}
+
+.slideContainer {
+    width: 100%; /* Width of the outside container */
+    margin: 25px;
+}
+.slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 600px; /* Full-width */
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+
+#viz {
+    width:1300px;
+}
+
+.heatmap-canvas {
+    opacity: 0.1;
+    position: absolute;
+    margin-left: 40px;
+    margin-top: 20px;
+}
