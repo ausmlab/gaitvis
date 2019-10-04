@@ -1,7 +1,7 @@
 var slider = document.getElementById("myRange");
 var heatmapCheckbox = document.getElementById("heatmapCheckbox");
 //var filestems = ['YU_VC01_20180620_092549', 'YU_VC01_20180620_141810', 'YU_VC01_20180620_144815', 'YU_VC01_20180620_151819', 'YU_VC01_20180620_161827', 'YU_VC01_20180620_174838', 'YU_VC01_20180620_181841', 'YU_VC01_20180620_191850', 'YU_VC01_20180620_202358', 'YU_VC02_20180620_092549', 'YU_VC02_20180620_141810', 'YU_VC02_20180620_144815', 'YU_VC02_20180620_154822', 'YU_VC02_20180620_161827', 'YU_VC02_20180620_174838','YU_VC02_20180620_181841', 'YU_VC02_20180620_191850', 'YU_VC02_20180620_202358'];
-var filestems = ['YU_VC01_20180620_092549', 'YU_VC01_20180620_141810', 'YU_VC01_20180620_144815'];
+var filestems = ['video1', 'video2', 'video3'];
 var dropdown = document.getElementById( 'dropdown' );
 for( f in filestems ) {
     dropdown.add( new Option( filestems[f] ) );

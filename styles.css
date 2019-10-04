@@ -96,6 +96,10 @@ path {
     width: 150px;
     margin: 0 5px;
 }
+.inputdropdowndiv{
+    width: 100px;
+    margin: 0 5px;
+}
 
 .mylabel {
     line-height: 25px;
