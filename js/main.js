@@ -16,7 +16,7 @@ var humanRadius = 1.0;
 function SmallGraph (name) {
     this.name = name;
     this.margin = {top: 20, right: 20, bottom: 40, left: 40};
-    this.width = 500 - this.margin.left - this.margin.right;
+    this.width = 300 - this.margin.left - this.margin.right;
     this.height = 300 - this.margin.top - this.margin.bottom;
 }
 
@@ -180,7 +180,7 @@ var drawAxes = function() {
 drawAxes();
 var speedDistanceGraph = new SmallGraph("speed-distance");
 speedDistanceGraph.initGraph(".speedchart");
-speedDistanceGraph.xAxis.ticks(10);
+speedDistanceGraph.xAxis.ticks(5);
 speedDistanceGraph.yAxis.ticks(5);
 var frame2time = 0.2;
 var frameWindowSize = 20;
