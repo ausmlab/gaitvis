@@ -7,23 +7,211 @@ var color = ["#1b70fc", "#faff16", "#d50527", "#158940", "#f898fd", "#24c9d7", "
 var frame2time = 0.2;
 var frameWindowSize = 20;
 var frameCount = 0;
-var dots;
-var lines;
-var data;
 //var opacityLookupTable = [1, 0.631272442, 0.15825031, 0.015608801, 0.000598028];
 //var opacityLookupTable = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1];
 var opacityLookupTable = [1, 0.0];
-
+var data;
 
 
 for (f in filestems) {
     dropdown.add(new Option(filestems[f]));
 }
 
+function FootstepChart() {
+    this.margin = {top: 20, right: 20, bottom: 40, left: 40};
+    this.width = 500 - this.margin.left - this.margin.right;
+    this.height = 500 - this.margin.top - this.margin.bottom;
+}
 
-var margin = {top: 20, right: 20, bottom: 40, left: 40},
-    width = 500 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+FootstepChart.prototype.initGraph = function() {
+    this.x = d3.scale.linear()
+        .range([0, this.width]);
+
+    this.y = d3.scale.linear()
+        .range([this.height, 0]);
+
+    let that = this;
+    this.rValueLine = d3.svg.line()
+        .interpolate("basis")
+        .x(function (d) {
+            return that.x(d.rx);
+        })
+        .y(function (d) {
+            return that.y(d.ry);
+        });
+    this.lValueLine = d3.svg.line()
+        .interpolate("basis")
+        .x(function (d) {
+            return that.x(d.lx);
+        })
+        .y(function (d) {
+            return that.y(d.ly);
+        });
+
+    this.xAxis = d3.svg.axis()
+        .scale(this.x)
+        .orient("bottom");
+
+    this.yAxis = d3.svg.axis()
+        .scale(this.y)
+        .orient("left");
+
+    this.svg = d3.select(".footstepchart").append("svg")
+        .attr("width", this.width + this.margin.left + this.margin.right)
+        .attr("height", this.height + this.margin.top + this.margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+}
+
+
+
+FootstepChart.prototype.drawAxes = function() {
+    this.x.domain([-10, 10]);
+    this.y.domain([-8, 12]);
+
+    humanRadius = Math.sqrt(Math.pow((this.x(1) - this.x(0)), 2)) * 0.5; //1m in graph space units
+
+    this.svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + this.height + ")")
+        .call(this.xAxis)
+        .append("text")
+        .attr("class", "label")
+        .attr("x", this.width)
+        .attr("y", -6)
+        .style("text-anchor", "end")
+        .text("x (m)");
+
+    this.svg.append("g")
+        .attr("class", "y axis")
+        .call(this.yAxis)
+        .append("text")
+        .attr("class", "label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("y (m)")
+
+}
+
+FootstepChart.prototype.reset = function() {
+    this.svg.selectAll(".line").remove();
+    this.svg.selectAll(".dot").remove();
+    this.svg.selectAll(".boundingCircle").remove()
+}
+
+FootstepChart.prototype.drawChart = function(data, groupByID) {
+    let that = this;
+    this.lines = this.svg.selectAll(".line")
+        .data(groupByID);
+    let g = this.lines.enter().append("g")
+    g.append("path")
+        .attr("class", "line")
+        .attr("d", function (d) {
+            return that.rValueLine(d.values)
+        })
+        .style("opacity", function (d) {
+            return lineOpacityLookup(d);
+        });
+    g.append("path")
+        .attr("class", "line")
+        .attr("d", function (d) {
+            return that.lValueLine(d.values)
+        })
+        .style("opacity", function (d) {
+            return lineOpacityLookup(d);
+        });
+
+    this.dots = this.svg.selectAll(".dot")
+        .data(data);
+    g = this.dots.enter().append("g")
+    g.append("circle")
+        .attr("class", "dot")
+        .attr("r", 3.5)
+        .attr("cx", function (d) {
+            return that.x(d.rx);
+        })
+        .attr("cy", function (d) {
+            return that.y(d.ry);
+        })
+        .style("fill", function (d) {
+            return color[d.id];
+        })
+        .style("opacity", function (d) {
+            return circleOpacityLookup(d.frame);
+        });
+    g.append("circle")
+        .attr("class", "dot")
+        .attr("r", 3.5)
+        .attr("cx", function (d) {
+            return that.x(d.lx);
+        })
+        .attr("cy", function (d) {
+            return that.y(d.ly);
+        })
+        .style("fill", function (d) {
+            return color[d.id];
+        })
+        .style("opacity", function (d) {
+            return circleOpacityLookup(d.frame);
+        });
+    g.append("circle")
+        .attr("class", "boundingCircle")
+        .attr("r", humanRadius)
+        .attr("cx", function (d) {
+            return that.x(d.cx);
+        })
+        .attr("cy", function (d) {
+            return that.y(d.cy);
+        })
+        .style("opacity", function (d) {
+            return circleOpacityLookup(d.frame);
+        });
+}
+
+FootstepChart.prototype.updateChart = function (currentFrame) {
+    this.dots.selectAll("circle").style("opacity", function (d) {
+        return circleOpacityLookup(d.frame);
+    })
+    this.lines.selectAll("path")
+        .style("opacity", function (d) {
+            return lineOpacityLookup(d);
+        });
+
+    this.dots.selectAll(".boundingCircle")
+        .filter(function (d) {
+            //return (d.frame != +slider.value);
+            return (d.frame != currentFrame);
+        })
+        .style("stroke-dasharray", '5 3');
+
+    let active = this.dots.selectAll(".boundingCircle")
+        .filter(function (d) {
+            return (d.frame == currentFrame);
+        });
+
+    let that = this;
+    active.each(function (d) {
+        let objD = this;
+        active.each(function (e) {
+            if (d.id < e.id) {
+                let dist = euclideanDistance([that.x(d.cx), that.y(d.cy)], [that.x(e.cx), that.y(e.cy)]);
+                if (dist < humanRadius * 2) {
+                    d3.select(objD)
+                        .style("stroke-dasharray", '0 0')
+                    d3.select(this)
+                        .style("stroke-dasharray", '0 0')
+
+                    let sss = speedDistanceGraph.svg.selectAll(".sline")
+                        .filter(function (z) {
+                            return ((d.id == +z.key) || (e.id == +z.key));
+                        })
+                }
+            }
+        });
+    })
+}
 
 
 function SpeedChart(name) {
@@ -33,48 +221,6 @@ function SpeedChart(name) {
     this.height = 300 - this.margin.top - this.margin.bottom;
 }
 
-
-//Initialize footsteps chart
-var x = d3.scale.linear()
-    .range([0, width]);
-
-var y = d3.scale.linear()
-    .range([height, 0]);
-
-var rValueLine = d3.svg.line()
-    .interpolate("basis")
-    .x(function (d) {
-        return x(d.rx);
-    })
-    .y(function (d) {
-        return y(d.ry);
-    });
-var lValueLine = d3.svg.line()
-    .interpolate("basis")
-    .x(function (d) {
-        return x(d.lx);
-    })
-    .y(function (d) {
-        return y(d.ly);
-    });
-
-
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
-
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left");
-
-var svg = d3.select(".footstepchart").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-//Initialize speed chart
 SpeedChart.prototype.initGraph = function (anchor) {
     this.svg = d3.select(anchor).append("svg")
         .attr("width", this.width + this.margin.left + this.margin.right)
@@ -92,6 +238,19 @@ SpeedChart.prototype.initGraph = function (anchor) {
     this.yAxis = d3.svg.axis()
         .scale(this.y)
         .orient("left");
+
+    let that = this;
+    this.distanceSpeedLine = d3.svg.line()
+        .interpolate("basis")
+        .x(function (d) {
+            return that.x(d.frame * frame2time);
+        })
+        .y(function (d) {
+            return that.y(d.speed);
+        });
+
+    this.xAxis.ticks(5);
+    this.yAxis.ticks(5);
 }
 
 SpeedChart.prototype.drawAxes = function (xDomain, yDomain, xLabel, yLabel) {
@@ -132,6 +291,7 @@ SpeedChart.prototype.drawAxes = function (xDomain, yDomain, xLabel, yLabel) {
 }
 
 SpeedChart.prototype.drawLineGraph = function (gdata) {
+    let that = this;
     this.svg.selectAll(".sline").remove();
     this.svg.append("g")
         .attr("clip-path", "url(#innerGraph)")
@@ -141,7 +301,7 @@ SpeedChart.prototype.drawLineGraph = function (gdata) {
         .append("path")
         .attr("class", "sline")
         .attr("d", function (d) {
-            return distanceSpeedLine(d.values.slice(1))
+            return that.distanceSpeedLine(d.values.slice(1))
         })
         .style("stroke", function (d) {
             return color[+d.key];
@@ -149,50 +309,23 @@ SpeedChart.prototype.drawLineGraph = function (gdata) {
 }
 
 SpeedChart.prototype.updateLineGraph = function () {
+    let that = this;
     this.svg.selectAll(".sline")
         .attr("d", function (d) {
-            return distanceSpeedLine(d.values.slice(1))
+            return that.distanceSpeedLine(d.values.slice(1))
         })
         .style("stroke-width", "");
 }
 
 
-function drawAxes() {
-    x.domain([-10, 10]);
-    y.domain([-8, 12]);
+var footstepchart = new FootstepChart();
+footstepchart.initGraph();
+footstepchart.drawAxes();
 
-    humanRadius = Math.sqrt(Math.pow((x(1) - x(0)), 2)) * 0.5; //1m in graph space units
-
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
-        .append("text")
-        .attr("class", "label")
-        .attr("x", width)
-        .attr("y", -6)
-        .style("text-anchor", "end")
-        .text("x (m)");
-
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
-        .append("text")
-        .attr("class", "label")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text("y (m)")
-
-}
-
-drawAxes();
 
 var speedDistanceGraph = new SpeedChart("speed-distance");
 speedDistanceGraph.initGraph(".speedchart");
-speedDistanceGraph.xAxis.ticks(5);
-speedDistanceGraph.yAxis.ticks(5);
+
 speedDistanceGraph.drawAxes([0, frameWindowSize * frame2time], [0, 5], "time (s)", "speed (m/s)");
 
 var heatmapInstance = h337.create({
@@ -200,14 +333,7 @@ var heatmapInstance = h337.create({
     radius: humanRadius * 2
 });
 
-var distanceSpeedLine = d3.svg.line()
-    .interpolate("basis")
-    .x(function (d) {
-        return speedDistanceGraph.x(d.frame * frame2time);
-    })
-    .y(function (d) {
-        return speedDistanceGraph.y(d.speed);
-    });
+
 
 
 
@@ -223,11 +349,9 @@ function loadData(filename) {
 
     slider.value = 0;
     frameCount = 0;
-    svg.selectAll(".line").remove();
-    svg.selectAll(".dot").remove();
-    svg.selectAll(".boundingCircle").remove()
+    footstepchart.reset();
     d3.text(textPath, function (text) {
-        data = d3.csv.parseRows(text).map(function (row) {
+        let data = d3.csv.parseRows(text).map(function (row) {
             return {
                 frame: +row[0],
                 id: +row[1],
@@ -264,72 +388,7 @@ function loadData(filename) {
                 f1.speed = (euclideanDistance([f0.cx, f0.cy], [f1.cx, f1.cy]) / (f1.time - f0.time));
             }
         });
-
-        lines = svg.selectAll(".line")
-            .data(groupByID);
-        let g = lines.enter().append("g")
-        g.append("path")
-            .attr("class", "line")
-            .attr("d", function (d) {
-                return rValueLine(d.values)
-            })
-            .style("opacity", function (d) {
-                return lineOpacityLookup(d);
-            });
-        g.append("path")
-            .attr("class", "line")
-            .attr("d", function (d) {
-                return lValueLine(d.values)
-            })
-            .style("opacity", function (d) {
-                return lineOpacityLookup(d);
-            });
-
-        dots = svg.selectAll(".dot")
-            .data(data);
-        g = dots.enter().append("g")
-        g.append("circle")
-            .attr("class", "dot")
-            .attr("r", 3.5)
-            .attr("cx", function (d) {
-                return x(d.rx);
-            })
-            .attr("cy", function (d) {
-                return y(d.ry);
-            })
-            .style("fill", function (d) {
-                return color[d.id];
-            })
-            .style("opacity", function (d) {
-                return circleOpacityLookup(d.frame);
-            });
-        g.append("circle")
-            .attr("class", "dot")
-            .attr("r", 3.5)
-            .attr("cx", function (d) {
-                return x(d.lx);
-            })
-            .attr("cy", function (d) {
-                return y(d.ly);
-            })
-            .style("fill", function (d) {
-                return color[d.id];
-            })
-            .style("opacity", function (d) {
-                return circleOpacityLookup(d.frame);
-            });
-        g.append("circle")
-            .attr("class", "boundingCircle")
-            .attr("r", humanRadius)
-            .attr("cx", function (d) {
-                return x(d.cx);
-            })
-            .attr("cy", function (d) {
-                return y(d.cy);
-            })
-            .style("opacity", function (d) {
-                return circleOpacityLookup(d.frame);
-            });
+        footstepchart.drawChart(data,groupByID);
         speedDistanceGraph.drawLineGraph(groupByID);
 
         update();
@@ -351,49 +410,12 @@ function update() {
         let points = data.filter(function (d) {
             return ((xBegin <= d.frame) && (d.frame <= +slider.value));
         }).map(function (d) {
-            return {x: Math.round(x(d.cx)), y: Math.round(y(d.cy)), value: 1};
+            return {x: Math.round(footstepchart.x(d.cx)), y: Math.round(footstepchart.y(d.cy)), value: 1};
         });
         heatmapInstance.setData({max: 1, data: points});
     }
 
-    dots.selectAll("circle").style("opacity", function (d) {
-        return circleOpacityLookup(d.frame);
-    })
-    lines.selectAll("path")
-        .style("opacity", function (d) {
-            return lineOpacityLookup(d);
-        });
-
-    dots.selectAll(".boundingCircle")
-        .filter(function (d) {
-            return (d.frame != +slider.value);
-        })
-        .style("stroke-dasharray", '5 3');
-
-    let active = dots.selectAll(".boundingCircle")
-        .filter(function (d) {
-            return (d.frame == +slider.value);
-        });
-
-    active.each(function (d) {
-        var objD = this;
-        active.each(function (e) {
-            if (d.id < e.id) {
-                var dist = euclideanDistance([x(d.cx), y(d.cy)], [x(e.cx), y(e.cy)]);
-                if (dist < humanRadius * 2) {
-                    d3.select(objD)
-                        .style("stroke-dasharray", '0 0')
-                    d3.select(this)
-                        .style("stroke-dasharray", '0 0')
-
-                    var sss = speedDistanceGraph.svg.selectAll(".sline")
-                        .filter(function (z) {
-                            return ((d.id == +z.key) || (e.id == +z.key));
-                        })
-                }
-            }
-        });
-    })
+    footstepchart.updateChart(+slider.value);
 
     let video = document.querySelector(".videocontainer");
     video.currentTime = (+slider.value) * frame2time;

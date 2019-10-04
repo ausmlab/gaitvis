@@ -1,20 +1,21 @@
 body {
     font: 10px sans-serif;
 }
+
 path {
     stroke: gray;
     stroke-width: 0.5;
     stroke-opacity: 0.3;
     fill: none;
-    shape-rendering: crispEdges;
+    shape-rendering: geometricPrecision;
 }
 
 .sline {
     stroke: black;
-    stroke-width: 3;
+    stroke-width: 2;
     stroke-opacity: 0.6;
     fill: none;
-    shape-rendering: crispEdges;
+    shape-rendering: geometricPrecision;
 }
 
 .axis path,
@@ -36,26 +37,6 @@ path {
     fill: none;
 }
 
-.slideContainer {
-    width: 100%; /* Width of the outside container */
-    margin: 25px;
-}
-.slider {
-    -webkit-appearance: none;  /* Override default CSS styles */
-    appearance: none;
-    width: 600px; /* Full-width */
-    height: 25px; /* Specified height */
-    background: #d3d3d3; /* Grey background */
-    outline: none; /* Remove outline */
-    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
-    transition: opacity .2s;
-}
-
-#viz {
-    width:1300px;
-}
-
 .heatmap-canvas {
     opacity: 0.1;
     position: absolute;
@@ -63,10 +44,9 @@ path {
     margin-top: 20px;
 }
 
-
 #heading {
     padding: 20px 100px;
-    background-color: rgb(220,220,220);
+    background-color: rgb(220, 220, 220);
 }
 
 .block {
@@ -92,11 +72,12 @@ path {
     height: 200px;
 }
 
-.inputdiv{
+.inputdiv {
     width: 150px;
     margin: 0 5px;
 }
-.inputdropdowndiv{
+
+.inputdropdowndiv {
     width: 100px;
     margin: 0 5px;
 }
