@@ -23,6 +23,7 @@ path {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
+    stroke-width: 2px;
 }
 
 .dot {
@@ -38,7 +39,7 @@ path {
 }
 
 .heatmap-canvas {
-    opacity: 0.1;
+    opacity: 0.2;
     position: absolute;
     margin-left: 40px;
     margin-top: 20px;
@@ -47,6 +48,7 @@ path {
 #heading {
     padding: 20px 100px;
     background-color: rgb(220, 220, 220);
+    text-align:center;
 }
 
 .block {

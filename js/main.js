@@ -13,6 +13,8 @@ var frameCount = 0;
 //var opacityLookupTable = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1];
 var opacityLookupTable = [1, 0.0];
 
+var videoInterval;
+
 // =======================================================
 
 function FootstepChart() {
@@ -410,6 +412,26 @@ function update() {
     footstepchart.updateChart(+slider.value);
     video.currentTime = (+slider.value) * frame2time;
 }
+
+video.onplay = () => {
+    videoInterval = setInterval(updateChart, frame2time * 1000)
+}
+
+const updateChart = () => {
+    // console.log(video.currentTime);
+    slider.value = video.currentTime / frame2time;
+    speedDistanceGraph.update(+slider.value);
+    heatmap.updateMap(+slider.value);
+    footstepchart.updateChart(+slider.value);   
+}
+
+video.onpause = () => {
+    clearInterval(videoInterval);
+};
+
+video.onended = () => {
+    clearInterval(videoInterval);
+};
 
 // =======================================================
 // utility functions
